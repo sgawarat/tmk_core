@@ -138,7 +138,7 @@ typedef union {
     uint16_t code;
     struct action_kind {
         uint16_t param  :12;
-        uint8_t  id     :4;
+        uint16_t id     :4;
     } kind;
     struct action_key {
         uint8_t  code   :8;
@@ -160,8 +160,8 @@ typedef union {
     } layer_tap;
     struct action_usage {
         uint16_t code   :10;
-        uint8_t  page   :2;
-        uint8_t  kind   :4;
+        uint16_t page   :2;
+        uint16_t kind   :4;
     } usage;
     struct action_backlight {
         uint8_t  level  :8;
