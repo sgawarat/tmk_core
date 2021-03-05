@@ -76,6 +76,10 @@ void process_action(keyrecord_t *record)
 #endif
     dprintln();
 
+#ifdef TMK_DESKTOP_FIX_WEAK_MODS
+    static keypos_t weak_mods_key = {255, 255};
+#endif
+
     switch (action.kind.id) {
         /* Key and Mods */
         case ACT_LMODS:
@@ -84,6 +88,10 @@ void process_action(keyrecord_t *record)
                 uint8_t mods = (action.kind.id == ACT_LMODS) ?  action.key.mods :
                                                                 action.key.mods<<4;
                 if (event.pressed) {
+#ifdef TMK_DESKTOP_FIX_WEAK_MODS
+                    clear_weak_mods();
+                    weak_mods_key = event.key;
+#endif
                     if (mods) {
                         add_weak_mods(mods);
                         send_keyboard_report();
@@ -91,10 +99,18 @@ void process_action(keyrecord_t *record)
                     register_code(action.key.code);
                 } else {
                     unregister_code(action.key.code);
+#ifdef TMK_DESKTOP_FIX_WEAK_MODS
+                    if (weak_mods_key.row == event.key.row && weak_mods_key.col == event.key.col) {
+                        clear_weak_mods();
+                        weak_mods_key.row = weak_mods_key.col = 255;
+                        send_keyboard_report();
+                    }
+#else
                     if (mods) {
                         del_weak_mods(mods);
                         send_keyboard_report();
                     }
+#endif
                 }
             }
             break;
